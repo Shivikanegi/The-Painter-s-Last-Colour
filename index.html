@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Painter's Last Colour</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lora:ital,wght@0,400;1,400&family=Yuji+Syuku&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #100A06;
+            --text-color: #F5ECD7;
+            --accent-color: #C9A84C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Lora', serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6, .cinzel {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-color);
+            font-weight: 400;
+        }
+
+        /* Fixed Canvas for Cherry Blossoms */
+        #blossom-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1; /* Behind most content, but above raw bg */
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: rgba(13, 13, 26, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--accent-color);
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #fff;
+            text-shadow: 0 0 8px rgba(201, 168, 76, 0.6);
+        }
+
+        /* All content wrapper to sit above canvas */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Hero Section */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            padding: 100px 8%;
+        }
+
+        .hero-content-left {
+            flex: 1;
+            padding-right: 40px;
+            z-index: 2;
+        }
+
+        /* Hero Title Redesign */
+        .hero-title {
+            position: relative;
+            margin-bottom: 20px;
+            line-height: 1.1;
+            text-align: center;
+            font-family: 'Alfa Slab One', serif;
+            font-size: clamp(38px, 5vw, 68px);
+            letter-spacing: 0.04em;
+            color: #F5ECD7;
+            font-weight: normal;
+            font-style: normal;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .hero-title::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(200, 114, 42, 0.06) 0%, rgba(200, 114, 42, 0) 50%);
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+
+        .title-line {
+            display: block;
+            position: relative;
+            filter: url(#ink-texture);
+            opacity: 0;
+            transform-origin: center;
+        }
+
+        .title-part1 {
+            animation: stampIn 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            color: #F5ECD7;
+        }
+
+        .title-part2-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: fit-content;
+            position: relative;
+        }
+
+        .title-part2 {
+            animation: stampIn 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.9s, colorBleed 2.5s ease-in-out forwards 0.9s;
+        }
+
+        .ink-splash-line {
+            margin-top: 8px;
+            height: 5px;
+            width: 100%;
+            background: rgba(201, 168, 76, 0.6);
+            border-radius: 2px;
+            mask-image: url('data:image/svg+xml;utf8,<svg preserveAspectRatio="none" viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg"><path d="M0 4 Q 10 1, 20 6 T 40 3 T 60 7 T 80 2 T 100 5 L 100 10 L 0 10 Z" fill="black"/></svg>');
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg preserveAspectRatio="none" viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg"><path d="M0 4 Q 10 1, 20 6 T 40 3 T 60 7 T 80 2 T 100 5 L 100 10 L 0 10 Z" fill="black"/></svg>');
+            mask-size: 100% 100%;
+            -webkit-mask-size: 100% 100%;
+            transform-origin: left center;
+            transform: scaleX(0);
+            animation: drawLine 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards 1.4s;
+            filter: url(#ink-texture);
+        }
+
+        /* Drips */
+        .letter-drop {
+            position: relative;
+            display: inline-block;
+        }
+
+        .drip {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background-color: currentColor;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .p-drip .drip { animation: dripFallFull 2.0s infinite cubic-bezier(0.4, 0, 1, 1) 2.0s; }
+        .l-drip .drip { animation: dripHang 3.5s infinite ease-in-out 2.5s; }
+        .c-drip .drip { animation: dripFallHalf 2.8s infinite cubic-bezier(0.4, 0, 1, 1) 2.2s; }
+
+        .splatter {
+            position: absolute;
+            left: 50%;
+            width: 0; height: 0;
+            color: inherit;
+        }
+
+        .p-splatter { bottom: -110px; }
+        .c-splatter { bottom: -80px; }
+
+        .dot {
+            position: absolute;
+            background-color: currentColor;
+            border-radius: 50%;
+            width: 3px; height: 3px;
+        }
+
+        .dot:nth-child(1) { width: 4px; height: 4px; }
+        .dot:nth-child(2) { width: 3px; height: 3px; }
+        .dot:nth-child(3) { width: 2px; height: 2px; }
+        .dot:nth-child(4) { width: 3px; height: 3px; }
+
+        .p-splatter .dot { animation: explodeDot 2.0s infinite ease-out 2.0s; }
+        .c-splatter .dot { animation: explodeDotC 2.8s infinite ease-out 2.2s; }
+
+        .hero-content-left p {
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-style: italic;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1.5s ease forwards 0.6s;
+        }
+
+        .hero-content-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            opacity: 0;
+            transform: translateX(30px);
+            animation: fadeLeft 1.5s ease forwards 0.8s;
+        }
+
+        .poster-container {
+            position: relative;
+            max-width: 450px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-poster {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 30px rgba(201, 168, 76, 0.15);
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .hero-poster:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(201, 168, 76, 0.3);
+        }
+
+        .poster-caption {
+            margin-top: 20px;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            color: var(--accent-color);
+            font-size: 1rem;
+            letter-spacing: 3px;
+            opacity: 0.9;
+        }
+
+        .poster-caption span {
+            display: block;
+            margin-top: 5px;
+            font-family: 'Lora', serif;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            letter-spacing: 1px;
+            font-style: italic;
+            opacity: 0.6;
+            text-transform: none;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            margin-left: -15px;
+            width: 30px;
+            height: 30px;
+            border-right: 2px solid var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            transform: rotate(45deg);
+            animation: pulseScroll 2s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        /* Story Section */
+        #story {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 100px 20px;
+            position: relative;
+        }
+
+        .global-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('assets/Cover page-Poster.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(15px) brightness(0.2);
+            z-index: -2;
+        }
+
+        .ai-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-family: 'Lora', serif;
+            letter-spacing: 0.5px;
+            z-index: 5;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .story-content {
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .story-line {
+            font-size: 1.2rem;
+            line-height: 2;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .story-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Characters Section */
+        #characters {
+            padding: 100px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .section-label {
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .section-label.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .characters-grid {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        .character-card {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .character-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .character-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(201, 168, 76, 0.15), 0 0 15px rgba(201, 168, 76, 0.2);
+            border-color: rgba(201, 168, 76, 0.6);
+        }
+
+        .char-img-container {
+            width: 100%;
+            aspect-ratio: 2/3;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .char-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            transition: transform 0.7s ease;
+            filter: brightness(0.8) contrast(1.1);
+        }
+
+        .character-card:hover .char-img {
+            transform: scale(1.05);
+            filter: brightness(1) contrast(1.1);
+        }
+
+        .char-info {
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .char-name {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .char-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* Audio Section */
+        #listen {
+            padding: 100px 20px 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .audio-intro {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+
+        .audio-intro.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .audio-player {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(201, 168, 76, 0.2);
+            border-radius: 50px;
+            padding: 20px 40px;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .audio-player.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .site-footer {
+            padding: 40px 20px 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.6;
+            letter-spacing: 1px;
+            font-style: italic;
+            width: 100%;
+        }
+
+        .play-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .play-btn:hover {
+            background: rgba(201, 168, 76, 0.1);
+            box-shadow: 0 0 15px rgba(201, 168, 76, 0.3);
+        }
+
+        .play-icon {
+            width: 0; 
+            height: 0; 
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 12px solid var(--accent-color);
+            margin-left: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .pause-icon {
+            display: flex;
+            gap: 4px;
+            height: 16px;
+        }
+
+        .pause-icon span {
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent-color);
+        }
+
+        .track-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .track-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 2px;
+            width: 0%;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: -4px;
+            width: 12px;
+            height: 12px;
+            background: var(--text-color);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .progress-container:hover .progress-bar::after {
+            opacity: 1;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Animations */
+        @keyframes stampIn {
+            0% { opacity: 0; transform: scale(1.08); filter: url(#ink-texture) blur(4px) brightness(0.5); }
+            30% { opacity: 1; transform: scale(1.02); filter: url(#ink-texture) blur(0px) brightness(0.2); }
+            100% { opacity: 1; transform: scale(1); filter: url(#ink-texture) blur(0px) brightness(1); }
+        }
+
+        @keyframes colorBleed {
+            0% { color: #F5ECD7; }
+            100% { color: #C9A84C; }
+        }
+
+        @keyframes drawLine {
+            0% { transform: scaleX(0); opacity: 0.6; }
+            100% { transform: scaleX(1); opacity: 0.6; }
+        }
+
+        @keyframes dripFallFull {
+            0% { opacity: 0; height: 0px; border-radius: 50%; bottom: 8px; transform: translateX(-50%) scale(0.5); }
+            10% { opacity: 1; height: 12px; border-radius: 50% 50% 50% 50%; bottom: 2px; transform: translateX(-50%) scale(1); }
+            30% { height: 30px; border-radius: 50px 50px 5px 5px; bottom: -20px; }
+            50% { height: 12px; border-radius: 50%; bottom: -100px; }
+            55% { opacity: 1; height: 8px; bottom: -110px; }
+            56% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes dripHang {
+            0% { opacity: 0; height: 0px; bottom: 8px; }
+            20% { opacity: 1; height: 10px; bottom: 0px; }
+            50% { height: 20px; bottom: -10px; transform: translateX(-45%); }
+            80% { height: 15px; bottom: -5px; transform: translateX(-55%); }
+            95% { opacity: 1; }
+            100% { opacity: 0; height: 0px; }
+        }
+
+        @keyframes dripFallHalf {
+            0% { opacity: 0; height: 0px; bottom: 8px; }
+            15% { opacity: 1; height: 12px; bottom: 0px; }
+            40% { height: 25px; bottom: -25px; border-radius: 50px 50px 5px 5px; }
+            50% { height: 15px; bottom: -30px; border-radius: 50%; }
+            60% { height: 20px; bottom: -30px; }
+            80% { height: 10px; bottom: -75px; }
+            85% { opacity: 1; bottom: -80px;}
+            86% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes explodeDot {
+            0%, 54% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+            55% { opacity: 1; transform: translate(0, 0) scale(1); }
+            75% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+            100% { opacity: 0; }
+        }
+
+        @keyframes explodeDotC {
+            0%, 79% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+            80% { opacity: 1; transform: translate(0, 0) scale(1); }
+            95% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+            100% { opacity: 0; }
+        }
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulseScroll {
+            0% { transform: rotate(45deg) translate(0, 0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: rotate(45deg) translate(10px, 10px); opacity: 0; }
+        }
+
+        @media (max-width: 900px) {
+            #hero {
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+                padding-top: 120px;
+            }
+            .hero-content-left {
+                padding-right: 0;
+                margin-bottom: 50px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 20px;
+            }
+            nav a {
+                font-size: 0.9rem;
+            }
+            .audio-player {
+                flex-direction: column;
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            .track-info {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="global-bg"></div>
+
+    <!-- SVG Filter for Ink Texture -->
+    <svg width="0" height="0" style="position: absolute;">
+        <filter id="ink-texture">
+            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+            <feGaussianBlur in="displaced" stdDeviation="0.5" result="blurred" />
+            <feComponentTransfer>
+                <feFuncA type="linear" slope="1.5" intercept="-0.1"/>
+            </feComponentTransfer>
+        </filter>
+    </svg>
+
+    <!-- Cherry Blossom Canvas -->
+    <canvas id="blossom-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#story">Story</a></li>
+            <li><a href="#characters">Characters</a></li>
+            <li><a href="#listen">Listen</a></li>
+        </ul>
+    </nav>
+
+    <div class="content-wrapper">
+        <!-- Hero Section -->
+        <section id="hero">
+            <div class="hero-content-left">
+                <h1 class="hero-title">
+                    <span class="title-line title-part1">The <span class="letter-drop p-drip">P<span class="drip"></span><span class="splatter p-splatter"><span class="dot" style="--dx: -15px; --dy: -5px;"></span><span class="dot" style="--dx: 12px; --dy: 2px;"></span><span class="dot" style="--dx: -4px; --dy: 8px;"></span><span class="dot" style="--dx: 10px; --dy: -8px;"></span></span></span>ainter's</span>
+                    <span class="title-part2-container">
+                        <span class="title-line title-part2"><span class="letter-drop l-drip">L<span class="drip"></span></span>ast <span class="letter-drop c-drip">C<span class="drip"></span><span class="splatter c-splatter"><span class="dot" style="--dx: -10px; --dy: -6px;"></span><span class="dot" style="--dx: 8px; --dy: 4px;"></span><span class="dot" style="--dx: -2px; --dy: 9px;"></span><span class="dot" style="--dx: 14px; --dy: -2px;"></span></span></span>olour</span>
+                        <div class="ink-splash-line"></div>
+                    </span>
+                </h1>
+                <p>You don't hand a spark back to the fire; you use it to light another lantern.</p>
+            </div>
+            <div class="hero-content-right">
+                <div class="poster-container">
+                    <img src="assets/Cover page-Poster.png" alt="Story Cover" class="hero-poster">
+                    <div class="poster-caption">
+                        — Story Cover —
+                        <span>Generated with ChatGPT</span>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator"></div>
+        </section>
+
+        <!-- Story Section -->
+        <section id="story">
+            <div class="story-content">
+                <p class="story-line">Kenji was never meant to be a samurai. He had wanted to paint. He wanted the heavy mountains, the cherry blossoms, the way the fading light fell softly through the shrine gates at dusk. But a heavy sword was pressed into his waiting hands, and the whole wide world agreed that this was right. He was too obedient to argue. He became the finest swordsman in the province. He became, in the quiet, the loneliest man of all.</p>
+                <p class="story-line">His master, Ryuken, found him painting by the lamplight after battle. Just the cherry tree. Nothing else. There were no warriors, there was no victory. Ryuken sat beside him on the ground and whispered softly, "This is the truest thing that I have ever seen you make." Three years went by, and Ryuken slipped away. And Kenji never touched a brush again.</p>
+                <p class="story-line">He was sitting by the ruined shrine when the boy appeared. He wasn't hiding. He walked straight up and sat right down, uninvited and bold, the way that only children and the very wise will do. Ink stained his fingers. A badly folded paper bulged within his hands. He opened it up and held it out, without a single word.</p>
+                <p class="story-line">It was a painting of the cherry tree. It was rough, it was unpracticed, but it was unmistakably this tree, this silent hill, this ancient shrine. And standing right beneath the branches, a lonely figure in his blackened armor.</p>
+                <p class="story-line">"I painted you," the little boy said. "You always look so sad. I thought that maybe this would help."</p>
+                <p class="story-line">Kenji stared down at the painting. A single, quiet petal fell, landing perfectly upon the paper. Gently. As if it had been placed by invisible hands. As if an old, familiar teacher was reaching through the veil of living, setting it down and saying: <em>See. The truest thing.</em></p>
+                <p class="story-line">Something heavy unlocked in Kenji’s chest.</p>
+                <p class="story-line">"Do you have more paper?" he asked into the quiet.</p>
+                <p class="story-line">The boy grinned wide and pulled a crumpled stack from his kimono.</p>
+                <p class="story-line">They sat beneath the cherry tree until the stars began to show. The old tired samurai, the small quiet boy. Passing the dark ink between them, painting the mountain, the shrine, the falling petals. Not speaking much. Not needing to. And somewhere in the space between the lamplight and the dark, a calm and luminous presence watched them both. Not with a heavy sadness, but with something closest to the word <em>finally</em>.</p>
+                <p class="story-line">Down below, the village saw the light upon the hill, and thought that Kenji kept his lonely vigil. They were not entirely wrong. But for the first time in three long years, the light was not of grief.</p>
+                <p class="story-line">It was just two people. Making something beautiful, in the dark.</p>
+            </div>
+        </section>
+
+        <!-- Characters Section -->
+        <section id="characters">
+            <h2 class="section-label cinzel">The Characters</h2>
+            <div class="characters-grid">
+                <!-- Character 1 -->
+                <div class="character-card">
+                    <div class="char-img-container">
+                        <img src="assets/Character 1 — Kenji (The Samurai).png" alt="Kenji" class="char-img">
+                        <div class="ai-badge">Generated with ChatGPT</div>
+                    </div>
+                    <div class="char-info">
+                        <h3 class="char-name">Kenji</h3>
+                        <p class="char-desc">The finest swordsman in the province, who traded his brush for a sword and became the loneliest man in it.</p>
+                    </div>
+                </div>
+                <!-- Character 2 -->
+                <div class="character-card">
+                    <div class="char-img-container">
+                        <img src="assets/Character 2 — Sora (The Boy).png" alt="Sora" class="char-img">
+                        <div class="ai-badge">Generated with ChatGPT</div>
+                    </div>
+                    <div class="char-info">
+                        <h3 class="char-name">Sora</h3>
+                        <p class="char-desc">A small, uninvited visitor with ink on his fingers, who saw the sadness in the old samurai and painted the truest thing.</p>
+                    </div>
+                </div>
+                <!-- Character 3 -->
+                <div class="character-card">
+                    <div class="char-img-container">
+                        <img src="assets/Character 3 — Ryuken (The Elder Spirit).png" alt="Ryuken" class="char-img">
+                        <div class="ai-badge">Generated with ChatGPT</div>
+                    </div>
+                    <div class="char-info">
+                        <h3 class="char-name">Ryuken</h3>
+                        <p class="char-desc">The master who recognized the true heart of his student in a simple painting of a cherry tree.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Audio Section -->
+        <section id="listen">
+            <p class="audio-intro">Close your eyes. Let the story find you.</p>
+            
+            <div class="audio-player">
+                <button class="play-btn" id="playBtn" aria-label="Play Narration">
+                    <div class="play-icon" id="playIcon"></div>
+                </button>
+                <div class="track-info">
+                    <div class="track-name">The Painter's Last Colour — Narration</div>
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="time-info">
+                        <span id="currentTime">0:00</span>
+                        <span id="duration">3:45</span>
+                    </div>
+                </div>
+                <!-- Audio Element -->
+                <audio id="audioElement" src="assets/Ink_Between_Them.mp3"></audio>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <p>Story and Song generated with Gemini</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- Intersection Observer for Fade-Ins ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.2
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Elements to observe
+        document.querySelectorAll('.story-line, .section-label, .character-card, .audio-intro, .audio-player').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- Custom Audio Player Logic ---
+        const audio = document.getElementById('audioElement');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+
+        let isPlaying = false;
+        
+        // Mock duration since there might be no real audio file initially
+        let mockDuration = 225; // 3:45
+        let mockCurrentTime = 0;
+        let mockInterval;
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                // Pause
+                audio.pause();
+                clearInterval(mockInterval);
+                playIcon.className = 'play-icon';
+                playIcon.innerHTML = '';
+            } else {
+                // Play
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        // Fallback mock playback if no audio file exists
+                        mockInterval = setInterval(() => {
+                            mockCurrentTime++;
+                            if (mockCurrentTime > mockDuration) mockCurrentTime = 0;
+                            updateProgress(mockCurrentTime, mockDuration);
+                        }, 1000);
+                    });
+                }
+                playIcon.className = 'pause-icon';
+                playIcon.innerHTML = '<span></span><span></span>';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            if(!isNaN(audio.duration)) {
+                updateProgress(audio.currentTime, audio.duration);
+            }
+        });
+
+        function updateProgress(current, total) {
+            const progressPercent = (current / total) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+            currentTimeEl.textContent = formatTime(current);
+        }
+
+        progressContainer.addEventListener('click', (e) => {
+            const width = progressContainer.clientWidth;
+            const clickX = e.offsetX;
+            const duration = isNaN(audio.duration) ? mockDuration : audio.duration;
+            const newTime = (clickX / width) * duration;
+            
+            if (!isNaN(audio.duration)) {
+                audio.currentTime = newTime;
+            } else {
+                mockCurrentTime = newTime;
+                updateProgress(mockCurrentTime, mockDuration);
+            }
+        });
+
+        // --- Cherry Blossom Canvas Animation ---
+        const canvas = document.getElementById('blossom-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const petals = [];
+        const petalCount = 40;
+
+        class Petal {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height - height;
+                this.size = Math.random() * 6 + 4;
+                this.speedY = Math.random() * 1 + 0.5;
+                this.speedX = Math.random() * 2 - 1;
+                this.angle = Math.random() * 360;
+                this.spin = Math.random() * 0.1 - 0.05;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.y * 0.01);
+                this.angle += this.spin;
+
+                if (this.y > height + this.size) {
+                    this.y = -this.size;
+                    this.x = Math.random() * width;
+                }
+                if (this.x > width + this.size) {
+                    this.x = -this.size;
+                } else if (this.x < -this.size) {
+                    this.x = width + this.size;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                
+                // Soft pink blossom color
+                ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`;
+                
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.quadraticCurveTo(this.size, -this.size, this.size, 0);
+                ctx.quadraticCurveTo(this.size, this.size, 0, this.size);
+                ctx.quadraticCurveTo(-this.size, this.size, -this.size, 0);
+                ctx.quadraticCurveTo(-this.size, -this.size, 0, 0);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < petalCount; i++) {
+            petals.push(new Petal());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            petals.forEach(petal => {
+                petal.update();
+                petal.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
