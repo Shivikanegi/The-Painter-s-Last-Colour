@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Painter's Last Colour</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Lora:ital,wght@0,400;1,400&family=Yuji+Syuku&display=swap" rel="stylesheet">
@@ -25,7 +26,7 @@
         html {
             scroll-behavior: smooth;
         }
-      
+        
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -48,7 +49,7 @@
             width: 100vw;
             height: 100vh;
             pointer-events: none;
-            z-index: 1; /* Behind most content, but above raw bg */
+            z-index: 1;
         }
 
         /* Navigation */
@@ -86,7 +87,6 @@
             text-shadow: 0 0 8px rgba(201, 168, 76, 0.6);
         }
 
-        /* All content wrapper to sit above canvas */
         .content-wrapper {
             position: relative;
             z-index: 10;
@@ -109,7 +109,6 @@
             z-index: 2;
         }
 
-        /* Hero Title Redesign */
         .hero-title {
             position: relative;
             margin-bottom: 20px;
@@ -182,7 +181,6 @@
             filter: url(#ink-texture);
         }
 
-        /* Drips */
         .letter-drop {
             position: relative;
             display: inline-block;
@@ -735,7 +733,6 @@
 <body>
     <div class="global-bg"></div>
 
-    <!-- SVG Filter for Ink Texture -->
     <svg width="0" height="0" style="position: absolute;">
         <filter id="ink-texture">
             <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
@@ -747,10 +744,8 @@
         </filter>
     </svg>
 
-    <!-- Cherry Blossom Canvas -->
     <canvas id="blossom-canvas"></canvas>
 
-    <!-- Navigation -->
     <nav>
         <ul>
             <li><a href="#story">Story</a></li>
@@ -760,7 +755,6 @@
     </nav>
 
     <div class="content-wrapper">
-        <!-- Hero Section -->
         <section id="hero">
             <div class="hero-content-left">
                 <h1 class="hero-title">
@@ -784,7 +778,6 @@
             <div class="scroll-indicator"></div>
         </section>
 
-        <!-- Story Section -->
         <section id="story">
             <div class="story-content">
                 <p class="story-line">Kenji was never meant to be a samurai. He had wanted to paint. He wanted the heavy mountains, the cherry blossoms, the way the fading light fell softly through the shrine gates at dusk. But a heavy sword was pressed into his waiting hands, and the whole wide world agreed that this was right. He was too obedient to argue. He became the finest swordsman in the province. He became, in the quiet, the loneliest man of all.</p>
@@ -802,11 +795,9 @@
             </div>
         </section>
 
-        <!-- Characters Section -->
         <section id="characters">
             <h2 class="section-label cinzel">The Characters</h2>
             <div class="characters-grid">
-                <!-- Character 1 -->
                 <div class="character-card">
                     <div class="char-img-container">
                         <img src="assets/Character 1 — Kenji (The Samurai).png" alt="Kenji" class="char-img">
@@ -817,7 +808,6 @@
                         <p class="char-desc">The finest swordsman in the province, who traded his brush for a sword and became the loneliest man in it.</p>
                     </div>
                 </div>
-                <!-- Character 2 -->
                 <div class="character-card">
                     <div class="char-img-container">
                         <img src="assets/Character 2 — Sora (The Boy).png" alt="Sora" class="char-img">
@@ -828,7 +818,6 @@
                         <p class="char-desc">A small, uninvited visitor with ink on his fingers, who saw the sadness in the old samurai and painted the truest thing.</p>
                     </div>
                 </div>
-                <!-- Character 3 -->
                 <div class="character-card">
                     <div class="char-img-container">
                         <img src="assets/Character 3 — Ryuken (The Elder Spirit).png" alt="Ryuken" class="char-img">
@@ -842,7 +831,6 @@
             </div>
         </section>
 
-        <!-- Audio Section -->
         <section id="listen">
             <p class="audio-intro">Close your eyes. Let the story find you.</p>
             
@@ -860,12 +848,10 @@
                         <span id="duration">3:45</span>
                     </div>
                 </div>
-                <!-- Audio Element -->
                 <audio id="audioElement" src="assets/Ink_Between_Them.mp3"></audio>
             </div>
         </section>
 
-        <!-- Footer -->
         <footer class="site-footer">
             <p>Story and Song generated with Gemini</p>
         </footer>
@@ -888,7 +874,6 @@
             });
         }, observerOptions);
 
-        // Elements to observe
         document.querySelectorAll('.story-line, .section-label, .character-card, .audio-intro, .audio-player').forEach(el => {
             observer.observe(el);
         });
@@ -904,7 +889,6 @@
 
         let isPlaying = false;
         
-        // Mock duration since there might be no real audio file initially
         let mockDuration = 225; // 3:45
         let mockCurrentTime = 0;
         let mockInterval;
@@ -917,17 +901,14 @@
 
         playBtn.addEventListener('click', () => {
             if (isPlaying) {
-                // Pause
                 audio.pause();
                 clearInterval(mockInterval);
                 playIcon.className = 'play-icon';
                 playIcon.innerHTML = '';
             } else {
-                // Play
                 const playPromise = audio.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
-                        // Fallback mock playback if no audio file exists
                         mockInterval = setInterval(() => {
                             mockCurrentTime++;
                             if (mockCurrentTime > mockDuration) mockCurrentTime = 0;
@@ -1014,10 +995,7 @@
                 ctx.save();
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.angle);
-                
-                // Soft pink blossom color
                 ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`;
-                
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.quadraticCurveTo(this.size, -this.size, this.size, 0);
@@ -1025,7 +1003,6 @@
                 ctx.quadraticCurveTo(-this.size, this.size, -this.size, 0);
                 ctx.quadraticCurveTo(-this.size, -this.size, 0, 0);
                 ctx.fill();
-                
                 ctx.restore();
             }
         }
@@ -1045,308 +1022,185 @@
 
         animate();
     </script>
-    <!-- GESTURE CONTROL WIDGET -->
-<div id="gesture-widget" style="
-  position:fixed; bottom:20px; right:20px;
-  width:200px; background:rgba(16,10,6,0.92);
-  border:1px solid #C8722A; border-radius:12px;
-  padding:12px; z-index:9999;
-  backdrop-filter:blur(8px);
-  font-family:'Cormorant Garamond',serif;">
 
-  <button id="gesture-btn" onclick="toggleGesture()" style="
-    width:100%; background:#C8722A; color:white;
-    border:none; border-radius:8px; padding:8px;
-    cursor:pointer; font-size:13px;
-    font-family:'Alfa Slab One',serif;">
-    ✋ Gesture Control
-  </button>
+    <div id="gesture-widget" style="position:fixed; bottom:20px; right:20px; width:200px; background:rgba(16,10,6,0.92); border:1px solid #C8722A; border-radius:12px; padding:12px; z-index:9999; backdrop-filter:blur(8px); font-family:'Cormorant Garamond',serif;">
+        <button id="gesture-btn" onclick="toggleGesture()" style="width:100%; background:#C8722A; color:white; border:none; border-radius:8px; padding:8px; cursor:pointer; font-size:13px; font-family:'Alfa Slab One',serif;">
+        ✋ Gesture Control
+        </button>
+        <video id="gesture-webcam" autoplay playsinline style="width:100%; height:120px; object-fit:cover; border-radius:8px; margin-top:8px; display:none; transform:scaleX(-1);"></video>
+        <div id="gesture-status" style="color:#F5F0E6; font-size:11px; text-align:center; margin-top:6px; display:none;">Show a gesture...</div>
+        <div id="gesture-cooldown" style="height:2px; background:#C8722A; width:0%; border-radius:2px; margin-top:4px; transition:width 2.5s linear;"></div>
+        <div style="margin-top:8px; font-size:10px; color:#8a7060; line-height:1.8;">
+            ✋ Open Palm → Play Audio<br>
+            👍 Thumbs Up → Blossoms<br>
+            ✌️ Peace Sign → Ryuken
+        </div>
+    </div>
 
-  <video id="gesture-webcam" autoplay playsinline style="
-    width:100%; height:120px; object-fit:cover;
-    border-radius:8px; margin-top:8px;
-    display:none; transform:scaleX(-1);">
-  </video>
+    <div id="ryuken-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle, rgba(91,200,245,0.15) 0%, rgba(10,6,8,0.92) 100%); z-index:99999; pointer-events:none; align-items:center; justify-content:center; flex-direction:column; text-align:center;">
+        <img src="assets/Character 3 — Ryuken (The Elder Spirit).png" style="width:280px; filter:brightness(1.4) saturate(0.6) drop-shadow(0 0 40px rgba(91,200,245,0.8));"/>
+        <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:26px; color:#E8D5B7; max-width:500px; margin-top:20px; padding:0 20px; text-shadow:0 0 20px rgba(91,200,245,0.5);">
+            "This is the truest thing that I have ever seen you make."
+        </p>
+        <p style="color:#8a7060; font-size:13px; letter-spacing:0.1em; margin-top:8px;">— Ryuken, to Kenji</p>
+    </div>
 
-  <div id="gesture-status" style="
-    color:#F5F0E6; font-size:11px;
-    text-align:center; margin-top:6px;
-    display:none;">
-    Show a gesture...
-  </div>
+    <div id="toast" style="display:none; position:fixed; top:30px; left:50%; transform:translateX(-50%); background:rgba(16,10,6,0.95); border:1px solid #C8722A; color:#F5F0E6; padding:10px 24px; border-radius:8px; z-index:99999; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px;"></div>
 
-  <div id="gesture-cooldown" style="
-    height:2px; background:#C8722A;
-    width:0%; border-radius:2px;
-    margin-top:4px; transition:width 2.5s linear;">
-  </div>
+    <script>
+        const MODEL_URL = 'https://teachablemachine.withgoogle.com/models/6lSXy7-Mt/';
+        const CONFIDENCE = 0.85;
+        const COOLDOWN_MS = 2500;
 
-  <div style="margin-top:8px; font-size:10px; 
-    color:#8a7060; line-height:1.8;">
-    ✋ Open Palm → Play Audio<br>
-    👍 Thumbs Up → Blossoms<br>
-    ✌️ Peace Sign → Ryuken
-  </div>
-</div>
+        let model, webcam, isActive = false;
+        let lastTrigger = 0, animFrame;
 
-<!-- RYUKEN OVERLAY -->
-<div id="ryuken-overlay" style="
-  display:none; position:fixed;
-  top:0; left:0; width:100%; height:100%;
-  background:radial-gradient(circle, 
-    rgba(91,200,245,0.15) 0%, 
-    rgba(10,6,8,0.92) 100%);
-  z-index:8000; pointer-events:none;
-  align-items:center; justify-content:center;
-  flex-direction:column; text-align:center;">
+        async function toggleGesture() {
+            if (!isActive) await startGesture();
+            else stopGesture();
+        }
 
-  <img src="assets/Character 3 — Ryuken (The Elder Spirit).png" 
-    style="width:280px; 
-    filter:brightness(1.4) saturate(0.6) 
-    drop-shadow(0 0 40px rgba(91,200,245,0.8));"/>
+        async function startGesture() {
+            try {
+                const btn = document.getElementById('gesture-btn');
+                btn.textContent = '● Loading...';
+                btn.style.background = '#8B1A1A';
 
-  <p style="
-    font-family:'Cormorant Garamond',serif;
-    font-style:italic; font-size:26px;
-    color:#E8D5B7; max-width:500px;
-    margin-top:20px; padding:0 20px;
-    text-shadow:0 0 20px rgba(91,200,245,0.5);">
-    "This is the truest thing that I have 
-    ever seen you make."
-  </p>
+                model = await tmImage.load(MODEL_URL + 'model.json', MODEL_URL + 'metadata.json');
+                webcam = new tmImage.Webcam(200, 120, true);
+                await webcam.setup();
+                await webcam.play();
 
-  <p style="color:#8a7060; 
-    font-size:13px; letter-spacing:0.1em;
-    margin-top:8px;">
-    — Ryuken, to Kenji
-  </p>
-</div>
+                const vid = document.getElementById('gesture-webcam');
+                vid.srcObject = webcam.webcam.srcObject;
+                vid.style.display = 'block';
 
-<!-- TOAST NOTIFICATION -->
-<div id="toast" style="
-  display:none; position:fixed;
-  top:30px; left:50%; 
-  transform:translateX(-50%);
-  background:rgba(16,10,6,0.95);
-  border:1px solid #C8722A;
-  color:#F5F0E6; padding:10px 24px;
-  border-radius:8px; z-index:9999;
-  font-family:'Cormorant Garamond',serif;
-  font-style:italic; font-size:16px;">
-</div>
+                document.getElementById('gesture-status').style.display = 'block';
+                btn.textContent = '● Listening...';
+                isActive = true;
+                loop();
+            } catch(e) {
+                document.getElementById('gesture-btn').textContent = '✋ Gesture Control';
+                const status = document.getElementById('gesture-status');
+                status.textContent = 'Camera access needed.';
+                status.style.color = '#8B1A1A';
+                status.style.display = 'block';
+            }
+        }
 
-<script>
-  // ── CONFIG ──────────────────────────────
-  const MODEL_URL = 'https://teachablemachine.withgoogle.com/models/6lSXy7-Mt/';
-  const CONFIDENCE = 0.85;
-  const COOLDOWN_MS = 2500;
+        function stopGesture() {
+            isActive = false;
+            cancelAnimationFrame(animFrame);
+            if (webcam) webcam.stop();
+            const vid = document.getElementById('gesture-webcam');
+            vid.style.display = 'none';
+            vid.srcObject = null;
+            document.getElementById('gesture-status').style.display = 'none';
+            const btn = document.getElementById('gesture-btn');
+            btn.textContent = '✋ Gesture Control';
+            btn.style.background = '#C8722A';
+        }
 
-  // ── STATE ───────────────────────────────
-  let model, webcam, isActive = false;
-  let lastTrigger = 0, animFrame;
+        async function loop() {
+            if (!isActive) return;
+            webcam.update();
+            await predict();
+            animFrame = requestAnimationFrame(loop);
+        }
 
-  // ── TOGGLE WIDGET ───────────────────────
-  async function toggleGesture() {
-    if (!isActive) {
-      await startGesture();
-    } else {
-      stopGesture();
-    }
-  }
+        async function predict() {
+            const now = Date.now();
+            if (now - lastTrigger < COOLDOWN_MS) return;
 
-  async function startGesture() {
-    try {
-      const btn = document.getElementById('gesture-btn');
-      btn.textContent = '● Loading...';
-      btn.style.background = '#8B1A1A';
+            const prediction = await model.predict(webcam.canvas);
+            let best = prediction.reduce((a, b) => a.probability > b.probability ? a : b);
 
-      model = await tmImage.load(
-        MODEL_URL + 'model.json',
-        MODEL_URL + 'metadata.json'
-      );
+            document.getElementById('gesture-status').textContent = 
+                best.probability > CONFIDENCE ? '✅ ' + best.className : 'Show a gesture...';
 
-      webcam = new tmImage.Webcam(200, 120, true); // <--- FIXED!
-      await webcam.setup();
-      await webcam.play();
+            if (best.probability > CONFIDENCE && best.className.toLowerCase() !== 'background' && best.className !== 'Class 1') {
+                lastTrigger = now;
+                triggerEffect(best.className);
+                startCooldownBar();
+            }
+        }
 
-      const vid = document.getElementById('gesture-webcam');
-      vid.srcObject = webcam.webcam.srcObject;
-      vid.style.display = 'block';
+        function startCooldownBar() {
+            const bar = document.getElementById('gesture-cooldown');
+            bar.style.transition = 'none';
+            bar.style.width = '100%';
+            setTimeout(() => {
+                bar.style.transition = 'width 2.5s linear';
+                bar.style.width = '0%';
+            }, 50);
+        }
 
-      document.getElementById('gesture-status')
-        .style.display = 'block';
+        function triggerEffect(gesture) {
+            const g = gesture.toLowerCase().trim();
+            if (g === 'open_palm' || g === 'open palm' || g === 'class 2') effectAudio();
+            if (g === 'thumbs_up' || g === 'thumbs up' || g === 'class 3') effectBlossoms();
+            if (g === 'peace_sign' || g === 'peace sign' || g === 'class 4') effectRyuken();
+        }
 
-      btn.textContent = '● Listening...';
-      isActive = true;
-      loop();
+        function effectAudio() {
+            showToast('✋ Kenji listens...');
+            document.getElementById('listen')?.scrollIntoView({ behavior:'smooth' });
+            
+            const playButton = document.getElementById('playBtn');
+            if (playButton) {
+                playButton.click(); 
+            }
+        }
 
-    } catch(e) {
-      document.getElementById('gesture-btn')
-        .textContent = '✋ Gesture Control';
-      document.getElementById('gesture-status')
-        .textContent = 'Camera access needed.';
-      document.getElementById('gesture-status')
-        .style.color = '#8B1A1A';
-      document.getElementById('gesture-status')
-        .style.display = 'block';
-    }
-  }
+        function effectBlossoms() {
+            showToast('👍 The hill remembers...');
+            const colors = ['#FFB7C5','#FF8FAB','#FFC0CB','#FFAEC0'];
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => {
+                    const p = document.createElement('div');
+                    const size = 8 + Math.random() * 10;
+                    p.style.cssText = `
+                        position:fixed; left:${Math.random()*100}vw; top:-20px;
+                        width:${size}px; height:${size * 0.6}px;
+                        background:${colors[Math.floor(Math.random()*colors.length)]};
+                        border-radius:50% 40%; pointer-events:none; z-index:99999;
+                        transform:rotate(${Math.random()*360}deg); opacity:0.9;
+                    `;
+                    document.body.appendChild(p);
+                    const duration = 3000 + Math.random()*3000;
+                    const sway = (Math.random()-0.5)*200;
+                    p.animate([
+                        { transform:`translateY(0) translateX(0) rotate(0deg)`, opacity: 0.9 },
+                        { transform:`translateY(100vh) translateX(${sway}px) rotate(${Math.random()*720}deg)`, opacity: 0 }
+                    ], { duration, easing:'ease-in' }).onfinish = () => p.remove();
+                }, i * 30);
+            }
+        }
 
-  function stopGesture() {
-    isActive = false;
-    cancelAnimationFrame(animFrame);
-    if (webcam) webcam.stop();
-    const vid = document.getElementById('gesture-webcam');
-    vid.style.display = 'none';
-    vid.srcObject = null;
-    document.getElementById('gesture-status')
-      .style.display = 'none';
-    const btn = document.getElementById('gesture-btn');
-    btn.textContent = '✋ Gesture Control';
-    btn.style.background = '#C8722A';
-  }
+        function effectRyuken() {
+            showToast('✌️ The master speaks...');
+            const overlay = document.getElementById('ryuken-overlay');
+            overlay.style.display = 'flex';
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.8s';
+            setTimeout(() => overlay.style.opacity = '1', 50);
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.display = 'none'; }, 800);
+            }, 4000);
+        }
 
-  // ── PREDICTION LOOP ──────────────────────
-  async function loop() {
-    if (!isActive) return;
-    webcam.update();
-    await predict();
-    animFrame = requestAnimationFrame(loop);
-  }
-
- async function predict() {
-    const now = Date.now();
-    if (now - lastTrigger < COOLDOWN_MS) return;
-
-    // This is the new line for Image models:
-    const prediction = await model.predict(webcam.canvas);
-
-    let best = prediction.reduce((a, b) => 
-      a.probability > b.probability ? a : b);
-
-    document.getElementById('gesture-status')
-      .textContent = best.probability > CONFIDENCE
-        ? '✅ ' + best.className
-        : 'Show a gesture...';
-
-    if (best.probability > CONFIDENCE && 
-        best.className !== 'background') {
-      lastTrigger = now;
-      triggerEffect(best.className);
-      startCooldownBar();
-    }
-  }
-
-  // ── COOLDOWN BAR ─────────────────────────
-  function startCooldownBar() {
-    const bar = document.getElementById(
-      'gesture-cooldown');
-    bar.style.transition = 'none';
-    bar.style.width = '100%';
-    setTimeout(() => {
-      bar.style.transition = 'width 2.5s linear';
-      bar.style.width = '0%';
-    }, 50);
-  }
-
-  // ── EFFECTS ──────────────────────────────
-  function triggerEffect(gesture) {
-    if (gesture === 'open_palm') effectAudio();
-    if (gesture === 'thumbs_up') effectBlossoms();
-    if (gesture === 'peace_sign') effectRyuken();
-  }
-
-// EFFECT 1 — AUDIO
-  function effectAudio() {
-    showToast('✋ Kenji listens...');
-    // We are changing this next line to use your exact ID!
-    const audio = document.getElementById('audioElement'); 
-    
-    if (audio) {
-      document.getElementById('listen')
-        ?.scrollIntoView({ behavior:'smooth' });
-      
-      // Added a safety check for browser autoplay blocks
-      if (audio.paused) {
-        audio.play().catch(err => console.log("Browser blocked audio:", err));
-      } else {
-        audio.pause();
-      }
-    }
-  }
-  // EFFECT 2 — CHERRY BLOSSOM BURST
-  function effectBlossoms() {
-    showToast('👍 The hill remembers...');
-    const colors = [
-      '#FFB7C5','#FF8FAB','#FFC0CB','#FFAEC0'
-    ];
-    for (let i = 0; i < 60; i++) {
-      setTimeout(() => {
-        const p = document.createElement('div');
-        const size = 8 + Math.random() * 10;
-        p.style.cssText = `
-          position:fixed;
-          left:${Math.random()*100}vw;
-          top:-20px;
-          width:${size}px;
-          height:${size * 0.6}px;
-          background:${colors[
-            Math.floor(Math.random()*colors.length)]};
-          border-radius:50% 40%;
-          pointer-events:none;
-          z-index:7000;
-          transform:rotate(${Math.random()*360}deg);
-          opacity:0.9;
-        `;
-        document.body.appendChild(p);
-        const duration = 3000 + Math.random()*3000;
-        const sway = (Math.random()-0.5)*200;
-        p.animate([
-          { transform:`translateY(0) 
-              translateX(0) rotate(0deg)`,
-            opacity: 0.9 },
-          { transform:`translateY(100vh) 
-              translateX(${sway}px) 
-              rotate(${Math.random()*720}deg)`,
-            opacity: 0 }
-        ], { duration, easing:'ease-in' })
-        .onfinish = () => p.remove();
-      }, i * 30);
-    }
-  }
-
-  // EFFECT 3 — RYUKEN SPIRIT
-  function effectRyuken() {
-    showToast('✌️ The master speaks...');
-    const overlay = document.getElementById(
-      'ryuken-overlay');
-    overlay.style.display = 'flex';
-    overlay.style.opacity = '0';
-    overlay.style.transition = 'opacity 0.8s';
-    setTimeout(() => overlay.style.opacity = '1', 50);
-    setTimeout(() => {
-      overlay.style.opacity = '0';
-      setTimeout(() => {
-        overlay.style.display = 'none';
-      }, 800);
-    }, 4000);
-  }
-
-  // TOAST
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.display = 'block';
-    t.style.opacity = '1';
-    setTimeout(() => {
-      t.style.transition = 'opacity 0.5s';
-      t.style.opacity = '0';
-      setTimeout(() => {
-        t.style.display = 'none';
-        t.style.transition = '';
-      }, 500);
-    }, 2000);
-  }
-</script>
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            t.style.opacity = '1';
+            setTimeout(() => {
+                t.style.transition = 'opacity 0.5s';
+                t.style.opacity = '0';
+                setTimeout(() => { t.style.display = 'none'; t.style.transition = ''; }, 500);
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
