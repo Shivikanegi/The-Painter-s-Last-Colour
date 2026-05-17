@@ -1049,7 +1049,7 @@
 
     <script>
         const MODEL_URL = 'https://teachablemachine.withgoogle.com/models/6lSXy7-Mt/';
-        const CONFIDENCE = 0.85;
+        const CONFIDENCE = 0.60;
         const COOLDOWN_MS = 2500;
 
         let model, webcam, isActive = false;
@@ -1061,33 +1061,46 @@
         }
 
         async function startGesture() {
-            try {
-                const btn = document.getElementById('gesture-btn');
-                btn.textContent = '● Loading...';
-                btn.style.background = '#8B1A1A';
+    try {
+      const btn = document.getElementById('gesture-btn');
+      btn.textContent = '● Loading...';
+      btn.style.background = '#8B1A1A';
 
-                model = await tmImage.load(MODEL_URL + 'model.json', MODEL_URL + 'metadata.json');
-                webcam = new tmImage.Webcam(200, 120, true);
-                await webcam.setup();
-                await webcam.play();
+      // --- THE MAGIC AUDIO UNLOCKER ---
+      // We secretly play and pause the audio when the user clicks the gesture button
+      // This forces the browser to "unlock" audio permissions for the AI
+      const myAudio = document.getElementById('audioElement');
+      if (myAudio) {
+          myAudio.volume = 0; // Mute it so you don't hear a blip
+          myAudio.play().then(() => {
+              myAudio.pause();
+              myAudio.volume = 1; // Unmute it for later
+          }).catch(e => console.log("Audio unlock pending"));
+      }
+      // ---------------------------------
 
-                const vid = document.getElementById('gesture-webcam');
-                vid.srcObject = webcam.webcam.srcObject;
-                vid.style.display = 'block';
+      model = await tmImage.load(MODEL_URL + 'model.json', MODEL_URL + 'metadata.json');
+      webcam = new tmImage.Webcam(200, 120, true);
+      await webcam.setup();
+      await webcam.play();
 
-                document.getElementById('gesture-status').style.display = 'block';
-                btn.textContent = '● Listening...';
-                isActive = true;
-                loop();
-            } catch(e) {
-                document.getElementById('gesture-btn').textContent = '✋ Gesture Control';
-                const status = document.getElementById('gesture-status');
-                status.textContent = 'Camera access needed.';
-                status.style.color = '#8B1A1A';
-                status.style.display = 'block';
-            }
-        }
+      const vid = document.getElementById('gesture-webcam');
+      vid.srcObject = webcam.webcam.srcObject;
+      vid.style.display = 'block';
 
+      document.getElementById('gesture-status').style.display = 'block';
+      btn.textContent = '● Listening...';
+      isActive = true;
+      loop();
+
+    } catch(e) {
+      document.getElementById('gesture-btn').textContent = '✋ Gesture Control';
+      const status = document.getElementById('gesture-status');
+      status.textContent = 'Camera access needed.';
+      status.style.color = '#8B1A1A';
+      status.style.display = 'block';
+    }
+  }
         function stopGesture() {
             isActive = false;
             cancelAnimationFrame(animFrame);
