@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1137,7 +1137,7 @@
 
 <script>
   // ── CONFIG ──────────────────────────────
-  const MODEL_URL = 'PASTE_YOUR_MODEL_URL_HERE';
+  const MODEL_URL = 'https://teachablemachine.withgoogle.com/models/6lSXy7-Mt/';
   const CONFIDENCE = 0.85;
   const COOLDOWN_MS = 2500;
 
@@ -1160,12 +1160,12 @@
       btn.textContent = '● Loading...';
       btn.style.background = '#8B1A1A';
 
-      model = await tmPose.load(
+      model = await tmImage.load(
         MODEL_URL + 'model.json',
         MODEL_URL + 'metadata.json'
       );
 
-      webcam = new tmPose.Webcam(200, 120, true);
+      webcam = new tmImage.Webcam(200, 120, true); // <--- FIXED!
       await webcam.setup();
       await webcam.play();
 
@@ -1214,14 +1214,12 @@
     animFrame = requestAnimationFrame(loop);
   }
 
-  async function predict() {
+ async function predict() {
     const now = Date.now();
     if (now - lastTrigger < COOLDOWN_MS) return;
 
-    const { pose, posenetOutput } = 
-      await model.estimatePose(webcam.canvas);
-    const prediction = 
-      await model.predict(posenetOutput);
+    // This is the new line for Image models:
+    const prediction = await model.predict(webcam.canvas);
 
     let best = prediction.reduce((a, b) => 
       a.probability > b.probability ? a : b);
