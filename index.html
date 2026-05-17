@@ -1256,17 +1256,24 @@
     if (gesture === 'peace_sign') effectRyuken();
   }
 
-  // EFFECT 1 — AUDIO
+// EFFECT 1 — AUDIO
   function effectAudio() {
     showToast('✋ Kenji listens...');
-    const audio = document.querySelector('audio');
+    // We are changing this next line to use your exact ID!
+    const audio = document.getElementById('audioElement'); 
+    
     if (audio) {
       document.getElementById('listen')
         ?.scrollIntoView({ behavior:'smooth' });
-      audio.paused ? audio.play() : audio.pause();
+      
+      // Added a safety check for browser autoplay blocks
+      if (audio.paused) {
+        audio.play().catch(err => console.log("Browser blocked audio:", err));
+      } else {
+        audio.pause();
+      }
     }
   }
-
   // EFFECT 2 — CHERRY BLOSSOM BURST
   function effectBlossoms() {
     showToast('👍 The hill remembers...');
